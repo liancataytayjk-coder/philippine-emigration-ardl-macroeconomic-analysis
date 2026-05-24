@@ -1,0 +1,872 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\Lian Cataytay\Desktop\Work\Ralph\Data\diagnostics_inline.log
+  log type:  text
+ opened on:  28 Mar 2026, 14:25:00
+
+. 
+. *----------------------------------------------------------
+. * MODEL 1: BASELINE PH PUSH + EXCHANGE RATE
+. * lnM lnPH_GDP ph_csg lnEXC
+. *----------------------------------------------------------
+. display _n "========== MODEL 1: BASELINE PH PUSH + FX =========="
+
+========== MODEL 1: BASELINE PH PUSH + FX ==========
+
+. 
+. ardl lnM lnPH_GDP ph_csg lnEXC, maxlags(2) aic ec
+
+ARDL(2,1,0,1) regression
+
+Sample: 1983 thru 2023                                  Number of obs =     41
+                                                        R-squared     = 0.5688
+                                                        Adj R-squared = 0.4774
+Log likelihood = 4.7181896                              Root MSE      = 0.2404
+
+------------------------------------------------------------------------------
+       D.lnM | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ADJ          |
+         lnM |
+         L1. |  -.6200153   .1364502    -4.54   0.000    -.8976252   -.3424054
+-------------+----------------------------------------------------------------
+LR           |
+    lnPH_GDP |   -.457886    .171115    -2.68   0.012     -.806022     -.10975
+      ph_csg |  -6.415917   2.809949    -2.28   0.029     -12.1328   -.6990333
+       lnEXC |  -.0299372   .2675626    -0.11   0.912    -.5742974    .5144231
+-------------+----------------------------------------------------------------
+SR           |
+         lnM |
+         LD. |   .3772733   .1335409     2.83   0.008     .1055824    .6489642
+             |
+    lnPH_GDP |
+         D1. |   3.143974   .8829538     3.56   0.001     1.347591    4.940357
+             |
+       lnEXC |
+         D1. |   2.142038   .8476199     2.53   0.016     .4175422    3.866533
+             |
+       _cons |   8.991782   2.515591     3.57   0.001     3.873773    14.10979
+------------------------------------------------------------------------------
+
+. estat ectest
+
+Pesaran, Shin, and Smith (2001) bounds test
+
+H0: no level relationship                                        F =     6.478
+Case 3                                                           t =    -4.544
+
+Finite sample (3 variables, 41 observations, 3 short-run coefficients)
+
+Kripfganz and Schneider (2020) critical values and approximate p-values
+
+   | 10%              | 5%               | 1%               | p-value         
+   |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1)
+---+------------------+------------------+------------------+-----------------
+ F |   2.887    4.063 |   3.518    4.845 |   5.011    6.673 |   0.002    0.012
+ t |  -2.550   -3.442 |  -2.896   -3.833 |  -3.599   -4.616 |   0.001    0.012
+
+do not reject H0 if
+    either F or t are closer to zero than critical values for I(0) variables
+      (if either p-value  > desired level for I(0) variables)
+reject H0 if
+    both F and t are more extreme than critical values for I(1) variables
+      (if both   p-values < desired level for I(1) variables)
+
+decision: no rejection (.a), inconclusive (.), or rejection (.r) at levels:
+
+             |       10%         5%         1% 
+-------------+---------------------------------
+    decision |        .r         .r          . 
+
+. 
+. display _n "Breusch–Godfrey LM (lags 1–2)"
+
+Breusch–Godfrey LM (lags 1–2)
+
+. estat bgodfrey, lags(1/2)
+
+Breusch–Godfrey LM test for autocorrelation
+---------------------------------------------------------------------------
+    lags(p)  |          chi2               df                 Prob > chi2
+-------------+-------------------------------------------------------------
+       1     |          0.049               1                   0.8254
+       2     |          2.309               2                   0.3152
+---------------------------------------------------------------------------
+                        H0: no serial correlation
+
+. 
+. display _n "Breusch–Pagan heteroskedasticity"
+
+Breusch–Pagan heteroskedasticity
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of D.lnM
+
+H0: Constant variance
+
+    chi2(1) =  25.73
+Prob > chi2 = 0.0000
+
+. 
+. display _n "Ramsey RESET"
+
+Ramsey RESET
+
+. estat ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of D.lnM
+
+H0: Model has no omitted variables
+
+F(3, 30) =  37.93
+Prob > F = 0.0000
+
+. 
+. tempvar resid_M1
+
+. predict double `resid_M1', residuals
+(4 missing values generated)
+
+. display _n "Normality (sktest) – residuals, Model 1"
+
+Normality (sktest) – residuals, Model 1
+
+. sktest `resid_M1'
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+    __000000 |        41         0.0001         0.0003         21.22     0.0000
+
+. drop `resid_M1'
+
+. 
+. 
+. *----------------------------------------------------------
+. * MODEL 2: BILATERAL PH–US PUSH–PULL
+. * lnM lnPH_GDP ph_csg lnUS_GDP us_csg lnEXC
+. *----------------------------------------------------------
+. display _n "========== MODEL 2: BILATERAL PH–US =========="
+
+========== MODEL 2: BILATERAL PH–US ==========
+
+. 
+. ardl lnM lnPH_GDP ph_csg lnUS_GDP us_csg lnEXC, maxlags(2) aic ec
+
+ARDL(2,2,0,0,0,1) regression
+
+Sample: 1983 thru 2023                                  Number of obs =     41
+                                                        R-squared     = 0.6507
+                                                        Adj R-squared = 0.5342
+Log likelihood = 9.0327507                              Root MSE      = 0.2269
+
+------------------------------------------------------------------------------
+       D.lnM | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ADJ          |
+         lnM |
+         L1. |  -1.001681   .2121551    -4.72   0.000    -1.434959   -.5684021
+-------------+----------------------------------------------------------------
+LR           |
+    lnPH_GDP |   .9417509   .7145373     1.32   0.197     -.517529    2.401031
+      ph_csg |  -6.262809   2.439514    -2.57   0.015    -11.24496   -1.280656
+    lnUS_GDP |  -2.871991   1.550634    -1.85   0.074    -6.038808    .2948269
+      us_csg |  -8.209464   6.123323    -1.34   0.190    -20.71496    4.296031
+       lnEXC |   1.176855   .8942686     1.32   0.198    -.6494853    3.003195
+-------------+----------------------------------------------------------------
+SR           |
+         lnM |
+         LD. |   .5317021   .1554088     3.42   0.002     .2143149    .8490893
+             |
+    lnPH_GDP |
+         D1. |   2.878077   .8815752     3.26   0.003      1.07766    4.678494
+         LD. |   .7637797   .5079604     1.50   0.143     -.273614    1.801173
+             |
+       lnEXC |
+         D1. |    1.51646    .854032     1.78   0.086    -.2277064    3.260626
+             |
+       _cons |    31.3211   12.47895     2.51   0.018     5.835689    56.80652
+------------------------------------------------------------------------------
+
+. estat ectest
+
+Pesaran, Shin, and Smith (2001) bounds test
+
+H0: no level relationship                                        F =     5.998
+Case 3                                                           t =    -4.721
+
+Finite sample (5 variables, 41 observations, 4 short-run coefficients)
+
+Kripfganz and Schneider (2020) critical values and approximate p-values
+
+   | 10%              | 5%               | 1%               | p-value         
+   |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1)
+---+------------------+------------------+------------------+-----------------
+ F |   2.467    3.762 |   2.977    4.444 |   4.197    6.059 |   0.001    0.011
+ t |  -2.514   -3.822 |  -2.873   -4.250 |  -3.605   -5.119 |   0.001    0.021
+
+do not reject H0 if
+    either F or t are closer to zero than critical values for I(0) variables
+      (if either p-value  > desired level for I(0) variables)
+reject H0 if
+    both F and t are more extreme than critical values for I(1) variables
+      (if both   p-values < desired level for I(1) variables)
+
+decision: no rejection (.a), inconclusive (.), or rejection (.r) at levels:
+
+             |       10%         5%         1% 
+-------------+---------------------------------
+    decision |        .r         .r          . 
+
+. 
+. display _n "Breusch–Godfrey LM (lags 1–2)"
+
+Breusch–Godfrey LM (lags 1–2)
+
+. estat bgodfrey, lags(1/2)
+
+Breusch–Godfrey LM test for autocorrelation
+---------------------------------------------------------------------------
+    lags(p)  |          chi2               df                 Prob > chi2
+-------------+-------------------------------------------------------------
+       1     |          0.252               1                   0.6158
+       2     |          3.527               2                   0.1714
+---------------------------------------------------------------------------
+                        H0: no serial correlation
+
+. 
+. display _n "Breusch–Pagan heteroskedasticity"
+
+Breusch–Pagan heteroskedasticity
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of D.lnM
+
+H0: Constant variance
+
+    chi2(1) =  29.13
+Prob > chi2 = 0.0000
+
+. 
+. display _n "Ramsey RESET"
+
+Ramsey RESET
+
+. estat ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of D.lnM
+
+H0: Model has no omitted variables
+
+F(3, 27) =  29.20
+Prob > F = 0.0000
+
+. 
+. tempvar resid_M2
+
+. predict double `resid_M2', residuals
+(4 missing values generated)
+
+. display _n "Normality (sktest) – residuals, Model 2"
+
+Normality (sktest) – residuals, Model 2
+
+. sktest `resid_M2'
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+    __000001 |        41         0.0012         0.0022         15.18     0.0005
+
+. drop `resid_M2'
+
+. 
+. 
+. *----------------------------------------------------------
+. * MODEL 3: INCOME-ONLY (PH & US GDP)
+. * lnM lnPH_GDP lnUS_GDP
+. *----------------------------------------------------------
+. display _n "========== MODEL 3: INCOME-ONLY =========="
+
+========== MODEL 3: INCOME-ONLY ==========
+
+. 
+. ardl lnM lnPH_GDP lnUS_GDP, maxlags(2) aic ec
+
+ARDL(2,1,1) regression
+
+Sample: 1983 thru 2023                                  Number of obs =     41
+                                                        R-squared     = 0.4268
+                                                        Adj R-squared = 0.3256
+Log likelihood = -1.1190211                             Root MSE      = 0.2731
+
+------------------------------------------------------------------------------
+       D.lnM | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ADJ          |
+         lnM |
+         L1. |  -.3910352   .1773881    -2.20   0.034    -.7515311   -.0305392
+-------------+----------------------------------------------------------------
+LR           |
+    lnPH_GDP |  -.4860822   .6498586    -0.75   0.460    -1.806754    .8345894
+    lnUS_GDP |   .3688337   .9422554     0.39   0.698     -1.54606    2.283727
+-------------+----------------------------------------------------------------
+SR           |
+         lnM |
+         LD. |   .3586918   .1537921     2.33   0.026     .0461487    .6712348
+             |
+    lnPH_GDP |
+         D1. |   .9872404   .5394787     1.83   0.076    -.1091121    2.083593
+             |
+    lnUS_GDP |
+         D1. |   3.766206   2.509574     1.50   0.143    -1.333861    8.866273
+             |
+       _cons |   3.751925   3.691566     1.02   0.317    -3.750239    11.25409
+------------------------------------------------------------------------------
+
+. estat ectest
+
+Pesaran, Shin, and Smith (2001) bounds test
+
+H0: no level relationship                                        F =     2.754
+Case 3                                                           t =    -2.204
+
+Finite sample (2 variables, 41 observations, 3 short-run coefficients)
+
+Kripfganz and Schneider (2020) critical values and approximate p-values
+
+   | 10%              | 5%               | 1%               | p-value         
+   |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1)
+---+------------------+------------------+------------------+-----------------
+ F |   3.302    4.379 |   4.061    5.278 |   5.851    7.373 |   0.164    0.329
+ t |  -2.558   -3.221 |  -2.899   -3.596 |  -3.589   -4.344 |   0.188    0.404
+
+do not reject H0 if
+    either F or t are closer to zero than critical values for I(0) variables
+      (if either p-value  > desired level for I(0) variables)
+reject H0 if
+    both F and t are more extreme than critical values for I(1) variables
+      (if both   p-values < desired level for I(1) variables)
+
+decision: no rejection (.a), inconclusive (.), or rejection (.r) at levels:
+
+             |       10%         5%         1% 
+-------------+---------------------------------
+    decision |        .a         .a         .a 
+
+. 
+. display _n "Breusch–Godfrey LM (lags 1–2)"
+
+Breusch–Godfrey LM (lags 1–2)
+
+. estat bgodfrey, lags(1/2)
+
+Breusch–Godfrey LM test for autocorrelation
+---------------------------------------------------------------------------
+    lags(p)  |          chi2               df                 Prob > chi2
+-------------+-------------------------------------------------------------
+       1     |          0.678               1                   0.4103
+       2     |          1.983               2                   0.3711
+---------------------------------------------------------------------------
+                        H0: no serial correlation
+
+. 
+. display _n "Breusch–Pagan heteroskedasticity"
+
+Breusch–Pagan heteroskedasticity
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of D.lnM
+
+H0: Constant variance
+
+    chi2(1) =  37.48
+Prob > chi2 = 0.0000
+
+. 
+. display _n "Ramsey RESET"
+
+Ramsey RESET
+
+. estat ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of D.lnM
+
+H0: Model has no omitted variables
+
+F(3, 31) =   1.29
+Prob > F = 0.2941
+
+. 
+. tempvar resid_M3
+
+. predict double `resid_M3', residuals
+(4 missing values generated)
+
+. display _n "Normality (sktest) – residuals, Model 3"
+
+Normality (sktest) – residuals, Model 3
+
+. sktest `resid_M3'
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+    __000002 |        41         0.0000         0.0000         30.36     0.0000
+
+. drop `resid_M3'
+
+. 
+. 
+. *----------------------------------------------------------
+. * MODEL 4: PH LABOR SHARE (DOMESTIC INEQUALITY)
+. * lnM lnPH_GDP ph_csg ph_labsh lnEXC
+. *----------------------------------------------------------
+. display _n "========== MODEL 4: PH LABOR SHARE =========="
+
+========== MODEL 4: PH LABOR SHARE ==========
+
+. 
+. ardl lnM lnPH_GDP ph_csg ph_labsh lnEXC, maxlags(2) aic ec
+
+ARDL(2,1,0,1,1) regression
+
+Sample: 1983 thru 2023                                  Number of obs =     41
+                                                        R-squared     = 0.6434
+                                                        Adj R-squared = 0.5399
+Log likelihood = 8.6099291                              Root MSE      = 0.2256
+
+------------------------------------------------------------------------------
+       D.lnM | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ADJ          |
+         lnM |
+         L1. |  -.5917986   .1289154    -4.59   0.000    -.8547233    -.328874
+-------------+----------------------------------------------------------------
+LR           |
+    lnPH_GDP |   -.806568   .3199839    -2.52   0.017    -1.459179   -.1539566
+      ph_csg |  -8.650556   2.924352    -2.96   0.006    -14.61481   -2.686302
+    ph_labsh |   7.092767   6.155894     1.15   0.258    -5.462261    19.64779
+       lnEXC |   .2900374   .4259388     0.68   0.501    -.5786706    1.158745
+-------------+----------------------------------------------------------------
+SR           |
+         lnM |
+         LD. |    .303253   .1292315     2.35   0.026     .0396836    .5668224
+             |
+    lnPH_GDP |
+         D1. |   3.263163   .8338271     3.91   0.000     1.562562    4.963765
+             |
+    ph_labsh |
+         D1. |  -9.276042   3.643989    -2.55   0.016    -16.70801   -1.844077
+             |
+       lnEXC |
+         D1. |   2.046181   .7962361     2.57   0.015     .4222473    3.670116
+             |
+       _cons |   7.771876   2.638575     2.95   0.006     2.390466    13.15329
+------------------------------------------------------------------------------
+
+. estat ectest
+
+Pesaran, Shin, and Smith (2001) bounds test
+
+H0: no level relationship                                        F =     5.884
+Case 3                                                           t =    -4.591
+
+Finite sample (4 variables, 41 observations, 4 short-run coefficients)
+
+Kripfganz and Schneider (2020) critical values and approximate p-values
+
+   | 10%              | 5%               | 1%               | p-value         
+   |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1)
+---+------------------+------------------+------------------+-----------------
+ F |   2.630    3.886 |   3.189    4.610 |   4.519    6.317 |   0.002    0.015
+ t |  -2.528   -3.639 |  -2.882   -4.050 |  -3.603   -4.882 |   0.001    0.018
+
+do not reject H0 if
+    either F or t are closer to zero than critical values for I(0) variables
+      (if either p-value  > desired level for I(0) variables)
+reject H0 if
+    both F and t are more extreme than critical values for I(1) variables
+      (if both   p-values < desired level for I(1) variables)
+
+decision: no rejection (.a), inconclusive (.), or rejection (.r) at levels:
+
+             |       10%         5%         1% 
+-------------+---------------------------------
+    decision |        .r         .r          . 
+
+. 
+. display _n "Breusch–Godfrey LM (lags 1–2)"
+
+Breusch–Godfrey LM (lags 1–2)
+
+. estat bgodfrey, lags(1/2)
+
+Breusch–Godfrey LM test for autocorrelation
+---------------------------------------------------------------------------
+    lags(p)  |          chi2               df                 Prob > chi2
+-------------+-------------------------------------------------------------
+       1     |          0.586               1                   0.4440
+       2     |          3.625               2                   0.1632
+---------------------------------------------------------------------------
+                        H0: no serial correlation
+
+. 
+. display _n "Breusch–Pagan heteroskedasticity"
+
+Breusch–Pagan heteroskedasticity
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of D.lnM
+
+H0: Constant variance
+
+    chi2(1) =  19.92
+Prob > chi2 = 0.0000
+
+. 
+. display _n "Ramsey RESET"
+
+Ramsey RESET
+
+. estat ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of D.lnM
+
+H0: Model has no omitted variables
+
+F(3, 28) =  24.26
+Prob > F = 0.0000
+
+. 
+. tempvar resid_M4
+
+. predict double `resid_M4', residuals
+(4 missing values generated)
+
+. display _n "Normality (sktest) – residuals, Model 4"
+
+Normality (sktest) – residuals, Model 4
+
+. sktest `resid_M4'
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+    __000003 |        41         0.0041         0.0078         12.21     0.0022
+
+. drop `resid_M4'
+
+. 
+. 
+. *----------------------------------------------------------
+. * MODEL 5: US LABOR SHARE (FOREIGN INEQUALITY)
+. * lnM lnPH_GDP ph_csg us_labsh lnEXC
+. *----------------------------------------------------------
+. display _n "========== MODEL 5: US LABOR SHARE =========="
+
+========== MODEL 5: US LABOR SHARE ==========
+
+. 
+. ardl lnM lnPH_GDP ph_csg us_labsh lnEXC, maxlags(2) aic ec
+
+ARDL(2,1,0,0,1) regression
+
+Sample: 1983 thru 2023                                  Number of obs =     41
+                                                        R-squared     = 0.5943
+                                                        Adj R-squared = 0.4928
+Log likelihood = 5.9647267                              Root MSE      = 0.2368
+
+------------------------------------------------------------------------------
+       D.lnM | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ADJ          |
+         lnM |
+         L1. |  -.5589147   .1411688    -3.96   0.000    -.8464662   -.2713633
+-------------+----------------------------------------------------------------
+LR           |
+    lnPH_GDP |  -.8718231   .3887842    -2.24   0.032    -1.663751   -.0798957
+      ph_csg |  -4.875991   3.366311    -1.45   0.157    -11.73294     1.98096
+    us_labsh |  -13.94781   11.42729    -1.22   0.231    -37.22443    9.328815
+       lnEXC |    .366409   .4624564     0.79   0.434    -.5755839    1.308402
+-------------+----------------------------------------------------------------
+SR           |
+         lnM |
+         LD. |   .2914599   .1448313     2.01   0.053    -.0035519    .5864716
+             |
+    lnPH_GDP |
+         D1. |   2.790486    .904889     3.08   0.004     .9472874    4.633685
+             |
+       lnEXC |
+         D1. |   1.871915   .8564881     2.19   0.036     .1273062    3.616524
+             |
+       _cons |   13.58454   4.081068     3.33   0.002     5.271675     21.8974
+------------------------------------------------------------------------------
+
+. estat ectest
+
+Pesaran, Shin, and Smith (2001) bounds test
+
+H0: no level relationship                                        F =     5.742
+Case 3                                                           t =    -3.959
+
+Finite sample (4 variables, 41 observations, 3 short-run coefficients)
+
+Kripfganz and Schneider (2020) critical values and approximate p-values
+
+   | 10%              | 5%               | 1%               | p-value         
+   |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1)
+---+------------------+------------------+------------------+-----------------
+ F |   2.639    3.874 |   3.196    4.589 |   4.518    6.270 |   0.002    0.016
+ t |  -2.539   -3.649 |  -2.890   -4.056 |  -3.604   -4.879 |   0.004    0.059
+
+do not reject H0 if
+    either F or t are closer to zero than critical values for I(0) variables
+      (if either p-value  > desired level for I(0) variables)
+reject H0 if
+    both F and t are more extreme than critical values for I(1) variables
+      (if both   p-values < desired level for I(1) variables)
+
+decision: no rejection (.a), inconclusive (.), or rejection (.r) at levels:
+
+             |       10%         5%         1% 
+-------------+---------------------------------
+    decision |        .r          .          . 
+
+. 
+. display _n "Breusch–Godfrey LM (lags 1–2)"
+
+Breusch–Godfrey LM (lags 1–2)
+
+. estat bgodfrey, lags(1/2)
+
+Breusch–Godfrey LM test for autocorrelation
+---------------------------------------------------------------------------
+    lags(p)  |          chi2               df                 Prob > chi2
+-------------+-------------------------------------------------------------
+       1     |          0.070               1                   0.7913
+       2     |          0.625               2                   0.7315
+---------------------------------------------------------------------------
+                        H0: no serial correlation
+
+. 
+. display _n "Breusch–Pagan heteroskedasticity"
+
+Breusch–Pagan heteroskedasticity
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of D.lnM
+
+H0: Constant variance
+
+    chi2(1) =  22.02
+Prob > chi2 = 0.0000
+
+. 
+. display _n "Ramsey RESET"
+
+Ramsey RESET
+
+. estat ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of D.lnM
+
+H0: Model has no omitted variables
+
+F(3, 29) =  32.55
+Prob > F = 0.0000
+
+. 
+. tempvar resid_M5
+
+. predict double `resid_M5', residuals
+(4 missing values generated)
+
+. display _n "Normality (sktest) – residuals, Model 5"
+
+Normality (sktest) – residuals, Model 5
+
+. sktest `resid_M5'
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+    __000004 |        41         0.0001         0.0004         20.96     0.0000
+
+. drop `resid_M5'
+
+. 
+. 
+. *----------------------------------------------------------
+. * MODEL 7: BASELINE + COVID DUMMY
+. * lnM lnPH_GDP ph_csg lnEXC covid
+. *----------------------------------------------------------
+. display _n "========== MODEL 7: BASELINE + COVID =========="
+
+========== MODEL 7: BASELINE + COVID ==========
+
+. 
+. ardl lnM lnPH_GDP ph_csg lnEXC covid, maxlags(2) aic ec
+
+ARDL(1,2,2,0,0) regression
+
+Sample: 1983 thru 2023                                  Number of obs =     41
+                                                        R-squared     = 0.8938
+                                                        Adj R-squared = 0.8630
+Log likelihood = 33.442566                              Root MSE      = 0.1231
+
+------------------------------------------------------------------------------
+       D.lnM | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ADJ          |
+         lnM |
+         L1. |  -.8117512   .0708694   -11.45   0.000    -.9562903   -.6672121
+-------------+----------------------------------------------------------------
+LR           |
+    lnPH_GDP |  -.2657977   .0866404    -3.07   0.004     -.442502   -.0890934
+      ph_csg |  -3.412812   1.252035    -2.73   0.010    -5.966353   -.8592701
+       lnEXC |  -.0594429   .1012327    -0.59   0.561    -.2659083    .1470225
+       covid |  -1.767881   .1778828    -9.94   0.000    -2.130675   -1.405086
+-------------+----------------------------------------------------------------
+SR           |
+    lnPH_GDP |
+         D1. |   .7632649   .2363849     3.23   0.003     .2811547    1.245375
+         LD. |    .406288   .2497796     1.63   0.114    -.1031408    .9157168
+             |
+      ph_csg |
+         D1. |   3.523877   2.816103     1.25   0.220    -2.219602    9.267356
+         LD. |    5.06076   2.827533     1.79   0.083    -.7060327    10.82755
+             |
+       _cons |   10.66693   1.278892     8.34   0.000     8.058615    13.27525
+------------------------------------------------------------------------------
+
+. estat ectest
+
+Pesaran, Shin, and Smith (2001) bounds test
+
+H0: no level relationship                                        F =    39.811
+Case 3                                                           t =   -11.454
+
+Finite sample (4 variables, 41 observations, 4 short-run coefficients)
+
+Kripfganz and Schneider (2020) critical values and approximate p-values
+
+   | 10%              | 5%               | 1%               | p-value         
+   |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1) |    I(0)     I(1)
+---+------------------+------------------+------------------+-----------------
+ F |   2.630    3.886 |   3.189    4.610 |   4.519    6.317 |   0.000    0.000
+ t |  -2.528   -3.639 |  -2.882   -4.050 |  -3.603   -4.882 |   0.000    0.000
+
+do not reject H0 if
+    either F or t are closer to zero than critical values for I(0) variables
+      (if either p-value  > desired level for I(0) variables)
+reject H0 if
+    both F and t are more extreme than critical values for I(1) variables
+      (if both   p-values < desired level for I(1) variables)
+
+decision: no rejection (.a), inconclusive (.), or rejection (.r) at levels:
+
+             |       10%         5%         1% 
+-------------+---------------------------------
+    decision |        .r         .r         .r 
+
+. 
+. display _n "Breusch–Godfrey LM (lags 1–2)"
+
+Breusch–Godfrey LM (lags 1–2)
+
+. estat bgodfrey, lags(1/2)
+
+Breusch–Godfrey LM test for autocorrelation
+---------------------------------------------------------------------------
+    lags(p)  |          chi2               df                 Prob > chi2
+-------------+-------------------------------------------------------------
+       1     |          0.435               1                   0.5094
+       2     |          1.630               2                   0.4426
+---------------------------------------------------------------------------
+                        H0: no serial correlation
+
+. 
+. display _n "Breusch–Pagan heteroskedasticity"
+
+Breusch–Pagan heteroskedasticity
+
+. estat hettest
+
+Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+Variable: Fitted values of D.lnM
+
+H0: Constant variance
+
+    chi2(1) =   0.00
+Prob > chi2 = 0.9973
+
+. 
+. display _n "Ramsey RESET"
+
+Ramsey RESET
+
+. estat ovtest
+
+Ramsey RESET test for omitted variables
+Omitted: Powers of fitted values of D.lnM
+
+H0: Model has no omitted variables
+
+F(3, 28) =   3.04
+Prob > F = 0.0455
+
+. 
+. tempvar resid_M7
+
+. predict double `resid_M7', residuals
+(4 missing values generated)
+
+. display _n "Normality (sktest) – residuals, Model 7"
+
+Normality (sktest) – residuals, Model 7
+
+. sktest `resid_M7'
+
+Skewness and kurtosis tests for normality
+                                                         ----- Joint test -----
+    Variable |       Obs   Pr(skewness)   Pr(kurtosis)   Adj chi2(2)  Prob>chi2
+-------------+-----------------------------------------------------------------
+    __000005 |        41         0.4105         0.0822          3.92     0.1406
+
+. drop `resid_M7'
+
+. 
+. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\Lian Cataytay\Desktop\Work\Ralph\Data\diagnostics_inline.log
+  log type:  text
+ closed on:  28 Mar 2026, 14:25:02
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
